@@ -1,2 +1,2 @@
 # othello
-Create our Unique othello
+Create our unique othello
