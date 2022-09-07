@@ -528,6 +528,42 @@ public class Game_Control : MonoBehaviour {
         }
     }
 
+    //周囲反転するスキル発動関数skillBlockFlip
+    void skillBlockFlip(int x, int y, int [,] board, bool realMove)
+    {
+        if(checkBlock(x, y, -1, -1, board))
+        {
+            flipPiece(x, y, -1, -1, board, realMove);
+        }
+        if(checkBlock(x, y, 0, -1, board))
+        {
+            flipPiece(x, y, 0, -1, board, realMove);
+        }
+        if(checkBlock(x, y, 1, -1, board))
+        {
+            flipPiece(x, y, 1, -1, board, realMove);
+        }
+        if(checkBlock(x, y, 1, 0, board))
+        {
+            flipPiece(x, y, 1, 0, board, realMove);
+        }
+        if(checkBlock(x, y, 1, 1, board))
+        {
+            flipPiece(x, y, 1, 1, board, realMove);
+        }
+        if(checkBlock(x, y, 0, 1, board))
+        {
+            flipPiece(x, y, 0, 1, board, realMove);
+        }
+        if(checkBlock(x, y, -1, 1, board))
+        {
+            flipPiece(x, y, -1, 1, board, realMove);
+        }
+        if(checkBlock(x, y, -1, 0, board))
+        {
+            flipPiece(x, y, -1, 0, board, realMove);
+        }
+    }
     void resetAlertText()
     {
         alert.text = "";
