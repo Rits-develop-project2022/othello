@@ -564,6 +564,37 @@ public class Game_Control : MonoBehaviour {
             flipPiece(x, y, -1, 0, board, realMove);
         }
     }
+
+    //skillBlockFlipのための周囲の白石探索用
+    bool checkBlock(int startX, int startY, int xModify, int yModify, int [,] board)
+    {
+        int currentX = startX + xModify;
+        int currentY = startY + yModify;
+
+        if (currentX > 7 || currentX < 0 ||
+            currentY > 7 || currentY < 0)
+        {
+            return false;
+        }
+
+        //If there's a piece here..
+
+        if (board[currentX, currentY] != 0)
+        {
+            //Is it an "my" piece?
+            if (isMyPiece(currentX, currentY, board))
+            {
+                return false;
+            }
+            else
+            {
+                //Check the white stone
+                return true;
+            }
+        }
+        else
+            return false;
+    }
     void resetAlertText()
     {
         alert.text = "";
