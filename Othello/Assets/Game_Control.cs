@@ -595,6 +595,23 @@ public class Game_Control : MonoBehaviour {
         else
             return false;
     }
+    //skillBlockFlipのための周囲の白石ひっくり返す用
+    void flipPiece(int x, int y, int xModify, int yModify, int [,] board, bool realMove)
+    {
+        int currentX = x + xModify;
+        int currentY = y + yModify;
+
+        //Rotate piece
+        if (realMove)
+        {
+            int targetRotation = playerTurn ? 90 : -90;
+            boardSpaces[currentX, currentY].transform.DORotate(new Vector3(targetRotation, 0, 0), 1);
+        }
+
+        //Change owner
+        board[currentX, currentY] = playerTurn ? 1 : 2;
+    }
+
     void resetAlertText()
     {
         alert.text = "";
