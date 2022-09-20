@@ -6,38 +6,77 @@ using DG.Tweening;
 public class Game_Control : MonoBehaviour {
 
     //Array that holds refrences to the chips themselves, used for displaying and animating them.
+    ///<Summary>
+    /// 盤面を表す8*8の配列
+    ///</Summary>
     static GameObject[,] boardSpaces = new GameObject[8, 8];
 
     //Array to represent the board state, 0 - no chip, 1 - player chip, 2 - AI chip
+    ///<Summary>
+    /// 盤面の状態（白黒どちらの石が置いてあるか）を表す8*8の配列
+    ///</Summary>
     static int[,] spaceOwner = new int[8, 8];
 
     //Used to keep track of number of valid flips in each direction (clockwise starting at top-left)
+    ///<Summary>
+    /// １方向に対して何枚石を反転させたかを記録する配列
+    ///</Summary>
     static int[] flipCounts = new int[8];
 
     //Chip prefab
+    ///<Summary>
+    /// 石のGameObject
+    ///</Summary>
     public GameObject chip;
     //Record whos turn it is
+    ///<Summary>
+    /// プレイヤーとAIどちらの番手かを表すパラメータ（1ならプレイヤー、0ならAI）
+    ///</Summary>
     static bool playerTurn = true;
     //Decrement when placing a piece until 0
+    ///<Summary>
+    /// 盤面にあと何箇所空白があるかを表す変数（盤面の64マスから最初に置かれる4マスを引いた60が初期数値）
+    ///</Summary>
     private int placesLeft = 60;
 
 
     //Used to display end-game announcements as well as when someone has no moves, etc.
+    ///<Summary>
+    /// テキスト表示のためのフィールド
+    ///</Summary>
     public Text alert;
 
     //Display current scores(chip counts) during the game 
+    ///<Summary>
+    /// 現在の自分の石の枚数をテキスト表示するフィールド
+    ///</Summary>
     public Text playerScoreText;
+    ///<Summary>
+    /// 現在の相手の石の枚数をテキスト表示するフィールド
+    ///</Summary>
     public Text AIScoreText;
 
     //Allows player to adjust the game difficulty
+    ///<Summary>
+    /// AIの強さを変更するスライダー
+    ///</Summary>
     public Slider difficultySlider;
     public Text difficultyText;
     private int difficulty = 1;
 
+    ///<Summary>
+    /// 自分と相手でパスが2回続いた時にゲームオーバー判定に使う変数
+    ///</Summary>
     private int stall = 0;
 
+    ///<Summary>
+    /// ゲームオーバーを表すパラメータ(1の時ゲームオーバー)
+    ///</Summary>
     private bool gameOver;
 
+    ///<Summary>
+    /// ゲーム開始時のボードの初期化を行う
+    ///</Summary>
     void Start() {
 
         //Initialize 4 starting pieces
@@ -66,6 +105,9 @@ public class Game_Control : MonoBehaviour {
         DOTween.Init(false, true, LogBehaviour.ErrorsOnly);
     }
 
+    ///<Summary>
+    /// 盤面上の動作やゲームオーバー判定などプレイ中の全ての挙動を行う
+    ///</Summary>
     void Update () {
 
         //Determine winner if there is one
@@ -174,13 +216,18 @@ public class Game_Control : MonoBehaviour {
         }
     }
 
+    ///<Summary>
+    /// AIの難易度設定を行う（スライダーからvalueを取ってくる）
+    ///</Summary>
     public void checkDifficulty()
     {
         difficulty = (int)difficultySlider.value;
         difficultyText.text = "Difficulty : " + difficulty;
     }
 
-
+    ///<Summary>
+    /// isMoveがTrueになるマスがあるか調べる（置けるマスがあるか確認）
+    ///</Summary>
     private bool hasMoves()
     {
         for (int i = 0; i < 8; i++)
@@ -197,6 +244,9 @@ public class Game_Control : MonoBehaviour {
     }
 
     //By summing the 1's we have player score and summing 2's we get AI score, using this to avoid incrementing and decrementing bugs when placing/flipping.
+    ///<Summary>
+    /// マス上の枚数のテキスト表示
+    ///</Summary>
     private void updateScore()
     {
         int[] currentScores = scoreBoard(spaceOwner, false);
@@ -206,7 +256,9 @@ public class Game_Control : MonoBehaviour {
 
 
 
-
+    ///<Summary>
+    /// AIの挙動（難易度からマスの選択、設置、反転）を行う
+    ///</Summary>
     void AI()
     {
         //Array for negamax to reference
@@ -251,6 +303,12 @@ public class Game_Control : MonoBehaviour {
      * @param board | Board to score
      * @param bias | Should hueristic or traditional scoring be used?
      */
+    ///<Summary>
+    /// ボード上の白黒の石の点数（枚数）を調べる（マスによって点数を変化させることも可能）
+    ///</Summary>
+    ///<param name="board"> マスの情報 </param>
+    ///<param name="hueristic"> ヒューリスティックを用いるかどうか 0,1</param>
+    ///<returns> {プレイヤーの枚数, 相手の枚数} </returns>
     private int[] scoreBoard(int[,] board, bool hueristic)
     {
         int newPlayerScore = 0;
@@ -278,11 +336,18 @@ public class Game_Control : MonoBehaviour {
 
     
     //Just brute force it
+    ///<Summary>
+    /// そのマスが角かどうか
+    ///</Summary>
+    ///<returns> {0, 1} </returns>
     private bool isCorner(int i, int j)
     {
         return (i == 0 && j == 0) || (i == 0 && j == 7) || (i == 7 && j == 0) || (i == 7 && j == 7);
     }
-
+    ///<Summary>
+    /// そのマスがエッジかどうか
+    ///</Summary>
+    ///<returns> {0, 1} </returns>
     private bool isSide(int i, int j)
     {
         return i == 7 || i == 0 || j == 0 || j == 7;
@@ -295,6 +360,12 @@ public class Game_Control : MonoBehaviour {
      * @param depth | How much fire my poor laptop produces out the vents.
      * @param myBestMove | reference for top-level call to output the move the AI should make, other calls bestMoves could probably be used for fancy tree pruning.
      */
+    ///<Summary>
+    /// negaMAXによるマス選択
+    ///</Summary>
+    ///<param name="board"> マスの情報 </param>
+    ///<param name="depth"> 難易度 </param>
+    ///<param name="myBestMove"> 
     private int negaMax(int [,] board, int depth, ref int[] myBestMove)
     {
         double bestScore = Double.NegativeInfinity;
@@ -341,6 +412,9 @@ public class Game_Control : MonoBehaviour {
 
 
     //Check that chosen space doesn't have a chip already and that there are chips to flip with this move.
+    ///<Summary>
+    /// 選択したマスに新たに石を置けるかどうか
+    ///</Summary>
     bool isMove(int x, int y, int[,] board)
     {
         if (board[x, y] != 0)
@@ -352,6 +426,9 @@ public class Game_Control : MonoBehaviour {
         return findValidMove();
     }
 
+    ///<Summary>
+    /// 空白のマスに置いた際に石をひっくり返せるかどうか
+    ///</Summary>
     private bool findValidMove()
     {
         bool result = false;
@@ -365,6 +442,9 @@ public class Game_Control : MonoBehaviour {
     }
 
     //Populate flipCount array for validation as well as for flipping chips later.
+    ///<Summary>
+    /// 各方向にひっくり返せる石があるかを調べる
+    ///</Summary>
     void checkFlips(int x, int y, int[,] board)
     {
         flipCounts = new int[8];
@@ -419,6 +499,15 @@ public class Game_Control : MonoBehaviour {
     }
 
     //Count number of possible flips in a particular direction recursively and return true when we reach an allied piece.
+    ///<Summary>
+    /// １方向にひっくり返せる石があるか、何枚返せるか調べる
+    ///</Summary>
+    ///<param name="startX"> 選択したマスのx座標</param>
+    ///<param name="startY"> 選択したマスのy座標</param>
+    ///<param name="xModify"> マスのどっち方向に見ていくか(x軸)</param>
+    ///<param name="yModify"> マスのどっち方向に見ていくか(y軸)</param>
+    ///<param name="count"> 反転する枚数(参照渡し)</param>
+    ///<param name="board"> ボード状況</param>
     bool countFlips(int startX, int startY, int xModify, int yModify, ref int count, int [,] board)
     {
         int currentX = startX + xModify;
@@ -450,13 +539,18 @@ public class Game_Control : MonoBehaviour {
         else
             return false;
     }
-
+    ///<Summary>
+    /// 自分の石かどうか
+    ///</Summary>
     private bool isMyPiece(int x, int y, int[,] board)
     {
         return playerTurn ? board[x, y] == 1 : board[x, y] == 2;
     }
 
     //For each direction we had flips, call flipPieces in that direction
+    ///<Summary>
+    /// 各方向にひっくり返せる石があった場合反転させる
+    ///</Summary>
     void findFlipDirections(int x, int y, int[,] board, bool realMove)
     {                
         if(flipCounts[0] > 0)
@@ -498,6 +592,9 @@ public class Game_Control : MonoBehaviour {
      * 
      * @param realMove | true if we need to involve the actual GameObjects and animate them, false if negamax planning
      */
+    ///<Summary>
+    /// 指定された方向に探索して自分の石が出てくるまで相手の石を反転する
+    ///</Summary>
     void flipPieces(int startX, int startY, int xModify, int yModify, int[,] board, bool realMove)
     {
 
@@ -529,6 +626,9 @@ public class Game_Control : MonoBehaviour {
     }
 
     //周囲反転するスキル発動関数skillBlockFlip
+    ///<Summary>
+    /// 置いたマスの周囲の相手の石を反転をさせる
+    ///</Summary>
     void skillBlockFlip(int x, int y, int [,] board, bool realMove)
     {
         if(checkBlock(x, y, -1, -1, board))
@@ -566,6 +666,9 @@ public class Game_Control : MonoBehaviour {
     }
 
     //skillBlockFlipのための周囲の白石探索用
+    ///<Summary>
+    /// skillBlockFlipのための周囲の白石探索をする
+    ///</Summary>
     bool checkBlock(int startX, int startY, int xModify, int yModify, int [,] board)
     {
         int currentX = startX + xModify;
@@ -596,6 +699,9 @@ public class Game_Control : MonoBehaviour {
             return false;
     }
     //skillBlockFlipのための周囲の白石ひっくり返す用
+    ///<Summary>
+    /// skillBlockFlipのための周囲の白石ひっくり返す
+    ///</Summary>
     void flipPiece(int x, int y, int xModify, int yModify, int [,] board, bool realMove)
     {
         int currentX = x + xModify;
