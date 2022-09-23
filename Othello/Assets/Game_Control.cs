@@ -163,19 +163,43 @@ public class Game_Control : MonoBehaviour {
                 return;
             }
             stall = 0;
-            
+
             //User's turn
             if (playerTurn)
             {
                 if (Input.GetMouseButtonDown(0))
                 {
-                    Debug.Log("Player Turn");
+                    //Debug.Log("Player Turn");
                     Ray mouse = Camera.main.ScreenPointToRay(Input.mousePosition);
                     RaycastHit info;
                     bool hit = Physics.Raycast(mouse, out info, 500.0f);
 
                     if (hit)
                     {
+                        if(info.collider.gameObject.name == "button")
+                        {
+                            ///必殺技を使う時
+                            if(is_Button_Pless==0)
+                            {
+                                ///必殺技待機状態に遷移
+                                is_Button_Pless = 1;
+                                Debug.Log("必殺技発動待機");
+                            }
+                            ///必殺技をキャンセルする時
+                            else if(is_Button_Pless==1)
+                            {
+                                ///必殺技使ってない状態に遷移
+                                is_Button_Pless = 0;
+                                Debug.Log("必殺技キャンセル");
+                            }
+
+                            else if(is_Button_Pless == -1)
+                            {
+                                Debug.Log("必殺技はもう使えません");
+                            }
+
+                        }
+
                         int x = (int)Math.Floor(info.point.x);
                         int yPos = (int)Math.Ceiling(info.point.y);
                         int y = Math.Abs(yPos);
