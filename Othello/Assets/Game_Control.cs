@@ -74,6 +74,13 @@ public class Game_Control : MonoBehaviour {
     ///</Summary>
     private bool gameOver;
 
+    ///必殺技ボタンが押されたかどうか
+    ///押されてない時＝0
+    ///押された時＝1
+    ///使われた時＝-1
+    public int is_Button_Pless = 0;
+
+
     ///<Summary>
     /// ゲーム開始時のボードの初期化を行う
     ///</Summary>
