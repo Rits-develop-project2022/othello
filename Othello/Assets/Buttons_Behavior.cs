@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 using DG.Tweening;  
 using UnityEngine.EventSystems;  
 
-public class Start_Button_Behavior : MonoBehaviour,
+public class Buttons_Behavior : MonoBehaviour,
     IPointerClickHandler,  
     IPointerDownHandler,  
     IPointerUpHandler
@@ -17,8 +17,10 @@ public class Start_Button_Behavior : MonoBehaviour,
 
     public void OnPointerClick(PointerEventData eventData)  
     {
-        onClickCallback?.Invoke();  
-        SceneManager.LoadScene("Board");
+        onClickCallback?.Invoke();
+        
+        if (gameObject.tag == "Exit_Button") SceneManager.LoadScene("Start_Scene");
+        else if (gameObject.tag == "Start_Button" || gameObject.tag == "Retry_Button") SceneManager.LoadScene("Board");
     }
 
     public void OnPointerDown(PointerEventData eventData)  
