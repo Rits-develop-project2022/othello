@@ -211,23 +211,50 @@ public class Game_Control : MonoBehaviour {
                             //If valid move
                             if (isMove(x, y, spaceOwner))
                             {
-                                //Visually create piece and animate it down to board
-                                GameObject newPiece = Instantiate(chip, new Vector3((float)(x + .5), (float)(yPos - .5), 0), transform.rotation);
-                                newPiece.transform.Rotate(180, 0, 0); //Make black(user color)
-                                newPiece.transform.DOMoveZ(8, (float).5, true);
+                                ///必殺技使ってない状態
+                                if(is_Button_Pless==0 || is_Button_Pless==-1)
+                                {
+                                    //Visually create piece and animate it down to board
+                                    GameObject newPiece = Instantiate(chip, new Vector3((float)(x + .5), (float)(yPos - .5), 0), transform.rotation);
+                                    newPiece.transform.Rotate(180, 0, 0); //Make black(user color)
+                                    newPiece.transform.DOMoveZ(8, (float).5, true);
 
-                                //Update game state
-                                boardSpaces[x, y] = newPiece;
-                                spaceOwner[x, y] = 1;
-                                placesLeft--;
+                                    //Update game state
+                                    boardSpaces[x, y] = newPiece;
+                                    spaceOwner[x, y] = 1;
+                                    placesLeft--;
 
-                                //Do all flips that occured from move
-                                findFlipDirections(x, y, spaceOwner, true);
-                                //TODO:add発動条件if文
-                                //ここから裏山
-                                skillBlockFlip(x, y, spaceOwner, true);
+                                    //Do all flips that occured from move
+                                    findFlipDirections(x, y, spaceOwner, true);
+                                    skillBlockFlip(x, y, spaceOwner, true);
 
-                                playerTurn = !playerTurn;
+                                    playerTurn = !playerTurn;
+                                }
+
+                                else if(is_Button_Pless == 1)
+                                {
+                                    ///必殺技使用済み状態に遷移
+                                    is_Button_Pless = -1;
+                                    ///必殺技発動
+                                    Debug.Log("必殺技発動！");
+                                    
+                                    //Visually create piece and animate it down to board
+                                    GameObject newPiece = Instantiate(chip, new Vector3((float)(x + .5), (float)(yPos - .5), 0), transform.rotation);
+                                    newPiece.transform.Rotate(180, 0, 0); //Make black(user color)
+                                    newPiece.transform.DOMoveZ(8, (float).5, true);
+
+                                    //Update game state
+                                    boardSpaces[x, y] = newPiece;
+                                    spaceOwner[x, y] = 1;
+                                    placesLeft--;
+
+                                    //Do all flips that occured from move
+                                    findFlipDirections(x, y, spaceOwner, true);
+                                    skillBlockFlip(x, y, spaceOwner, true);
+
+                                    playerTurn = !playerTurn;
+                                }
+
                             }
                             else
                             {
