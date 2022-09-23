@@ -193,6 +193,7 @@ public class Game_Control : MonoBehaviour {
                                 //Do all flips that occured from move
                                 findFlipDirections(x, y, spaceOwner, true);
                                 //TODO:add発動条件if文
+                                //ここから裏山
                                 skillBlockFlip(x, y, spaceOwner, true);
 
                                 playerTurn = !playerTurn;
