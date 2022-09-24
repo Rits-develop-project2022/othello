@@ -226,7 +226,6 @@ public class Game_Control : MonoBehaviour {
 
                                     //Do all flips that occured from move
                                     findFlipDirections(x, y, spaceOwner, true);
-                                    skillBlockFlip(x, y, spaceOwner, true);
 
                                     playerTurn = !playerTurn;
                                 }
@@ -776,7 +775,6 @@ public class Game_Control : MonoBehaviour {
         //Change owner
         board[currentX, currentY] = playerTurn ? 1 : 2;
     }
-
     void resetAlertText()
     {
         alert.text = "";
