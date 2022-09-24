@@ -3,6 +3,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 
+using UnityEngine.EventSystems;  
+using UnityEngine.SceneManagement;
+
 public class Game_Control : MonoBehaviour {
 
     //Array that holds refrences to the chips themselves, used for displaying and animating them.
@@ -72,7 +75,7 @@ public class Game_Control : MonoBehaviour {
     ///<Summary>
     /// ゲームオーバーを表すパラメータ(1の時ゲームオーバー)
     ///</Summary>
-    private bool gameOver;
+    private bool gameOver = false;
 
     ///必殺技ボタンが押されたかどうか
     ///押されてない時＝0
@@ -85,7 +88,6 @@ public class Game_Control : MonoBehaviour {
     /// ゲーム開始時のボードの初期化を行う
     ///</Summary>
     void Start() {
-
         //Initialize 4 starting pieces
         GameObject black1 = Instantiate(chip, new Vector3((float)(3.5), (float)(-3.5), (float)8.0), transform.rotation);
         GameObject black2 = Instantiate(chip, new Vector3((float)(4.5), (float)(-4.5), (float)8.0), transform.rotation);
@@ -120,14 +122,17 @@ public class Game_Control : MonoBehaviour {
         //Determine winner if there is one
         if(gameOver)
         {
+            // Initialize process
+            spaceOwner = new int[8, 8];
+            gameOver = false;
             int[] scores = scoreBoard(spaceOwner, false);
+            scores[0] = 2;
+            scores[1] = 2;
+            placesLeft = 60;
+            stall = 0;
 
-            if (scores[0] > scores[1])
-                alert.text = "You have won the game!";
-            else if (scores[0] == scores[1])
-                alert.text = "It's a draw!";
-            else
-                alert.text = "You have lost!";
+            // move to result scene
+            SceneManager.LoadScene("Result_Scene");
             return;
         }
         else
