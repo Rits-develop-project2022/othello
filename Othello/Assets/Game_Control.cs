@@ -3,6 +3,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 
+using UnityEngine.EventSystems;  
+using UnityEngine.SceneManagement;
+
 public class Game_Control : MonoBehaviour {
 
     //Array that holds refrences to the chips themselves, used for displaying and animating them.
@@ -72,7 +75,7 @@ public class Game_Control : MonoBehaviour {
     ///<Summary>
     /// ゲームオーバーを表すパラメータ(1の時ゲームオーバー)
     ///</Summary>
-    private bool gameOver;
+    private bool gameOver = false;
 
     ///必殺技ボタンが押されたかどうか
     ///押されてない時＝0
@@ -80,28 +83,11 @@ public class Game_Control : MonoBehaviour {
     ///使われた時＝-1
     public int is_Button_Pless = 0;
 
-    ///SE
-    ///コマを置いた時の音
-    public AudioClip sound1; //コマを置くSE
-    public AudioClip sound2; //コマを返すSE
-    public AudioClip sound3; //必殺技発動待機
-    public AudioClip sound4; //必殺技キャンセル
-
-
-    ///オーディオ再生する関数
-    AudioSource audioSource;
-
-    //TimeAlert
-    public Time_Manager time_Manager;
-    //時間切れになったかどうか
-    private bool timeOver;
-
 
     ///<Summary>
     /// ゲーム開始時のボードの初期化を行う
     ///</Summary>
     void Start() {
-
         //Initialize 4 starting pieces
         GameObject black1 = Instantiate(chip, new Vector3((float)(3.5), (float)(-3.5), (float)8.0), transform.rotation);
         GameObject black2 = Instantiate(chip, new Vector3((float)(4.5), (float)(-4.5), (float)8.0), transform.rotation);
@@ -118,9 +104,6 @@ public class Game_Control : MonoBehaviour {
         boardSpaces[3, 4] = white1;
         boardSpaces[4, 3] = white2;
 
-        //timemanagerのコンポーネント捜索
-        //もっといい書き方がある気がするFindをどのサイトも推奨していないbyうらやま
-        time_Manager = GameObject.Find("Time_Manager").GetComponent<Time_Manager>();
         //Initialize state of board
         spaceOwner[3, 3] = 1;
         spaceOwner[4, 4] = 1;
@@ -129,9 +112,6 @@ public class Game_Control : MonoBehaviour {
 
         //Initialize animation asset
         DOTween.Init(false, true, LogBehaviour.ErrorsOnly);
-
-        //AudioComponentを取得
-        audioSource = GetComponent<AudioSource>();
     }
 
     ///<Summary>
@@ -142,28 +122,17 @@ public class Game_Control : MonoBehaviour {
         //Determine winner if there is one
         if(gameOver)
         {
+            // Initialize process
+            spaceOwner = new int[8, 8];
+            gameOver = false;
             int[] scores = scoreBoard(spaceOwner, false);
-            //時間切れなら
-            if (timeOver)
-            {
-                alert.text = "Time Over!";
-            }
-            //正常にゲームが終了したら
-            else
-            {
-                if (scores[0] > scores[1])
-                {
-                alert.text = "You have won the game!";
-                }
-                else if (scores[0] == scores[1])
-                {
-                    alert.text = "It's a draw!";
-                }
-                else
-                {
-                alert.text = "You have lost!";
-                }
-            }
+            scores[0] = 2;
+            scores[1] = 2;
+            placesLeft = 60;
+            stall = 0;
+
+            // move to result scene
+            SceneManager.LoadScene("Result_Scene");
             return;
         }
         else
@@ -172,13 +141,6 @@ public class Game_Control : MonoBehaviour {
             if (placesLeft == 0)
             {
                 gameOver = true;
-                return;
-            }
-            //時間切れになったとき
-            if(time_Manager.timerText.text == "0")
-            {
-                gameOver = true;
-                timeOver = true;
                 return;
             }
             //If current side has no possible moves..
@@ -227,7 +189,6 @@ public class Game_Control : MonoBehaviour {
                                 ///必殺技待機状態に遷移
                                 is_Button_Pless = 1;
                                 Debug.Log("必殺技発動待機");
-                                audioSource.PlayOneShot(sound3);
                             }
                             ///必殺技をキャンセルする時
                             else if(is_Button_Pless==1)
@@ -235,13 +196,11 @@ public class Game_Control : MonoBehaviour {
                                 ///必殺技使ってない状態に遷移
                                 is_Button_Pless = 0;
                                 Debug.Log("必殺技キャンセル");
-                                audioSource.PlayOneShot(sound4);
                             }
 
                             else if(is_Button_Pless == -1)
                             {
                                 Debug.Log("必殺技はもう使えません");
-                                audioSource.PlayOneShot(sound4);
                             }
 
                         }
@@ -656,50 +615,38 @@ public class Game_Control : MonoBehaviour {
     /// 各方向にひっくり返せる石があった場合反転させる
     ///</Summary>
     void findFlipDirections(int x, int y, int[,] board, bool realMove)
-    { 
-        //タイマーリセット
-        time_Manager.Reset_Time();
-        //コマを置いた音再生
-        audioSource.PlayOneShot(sound1);
+    {                
         if(flipCounts[0] > 0)
         {
             flipPieces(x, y, -1, -1, board, realMove);
-            audioSource.PlayOneShot(sound2);//ひっくり返す音
         }
         if (flipCounts[1] > 0)
         {
             flipPieces(x, y, 0, -1, board, realMove);
-            audioSource.PlayOneShot(sound2);
         }
         if (flipCounts[2] > 0)
         {
             flipPieces(x, y, 1, -1, board, realMove);
-            audioSource.PlayOneShot(sound2);
         }
         if (flipCounts[3] > 0)
         {
             flipPieces(x, y, 1, 0, board, realMove);
-            audioSource.PlayOneShot(sound2);
         }
         if (flipCounts[4] > 0)
         {
             flipPieces(x, y, 1, 1, board, realMove);
-            audioSource.PlayOneShot(sound2);
         }
         if (flipCounts[5] > 0)
         {
             flipPieces(x, y, 0, 1, board, realMove);
-            audioSource.PlayOneShot(sound2);
         }
         if (flipCounts[6] > 0)
         {
             flipPieces(x, y, -1, 1, board, realMove);
-            audioSource.PlayOneShot(sound2);
         }
         if (flipCounts[7] > 0)
         {
             flipPieces(x, y, -1, 0, board, realMove);
-            audioSource.PlayOneShot(sound2);
         }
     }
 
