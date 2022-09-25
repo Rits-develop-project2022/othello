@@ -82,6 +82,22 @@ public class Game_Control : MonoBehaviour {
     ///押された時＝1
     ///使われた時＝-1
     public int is_Button_Pless = 0;
+    ///SE
+    ///コマを置いた時の音
+    public AudioClip sound1; //コマを置くSE
+    public AudioClip sound2; //コマを返すSE
+    public AudioClip sound3; //必殺技発動待機
+    public AudioClip sound4; //必殺技キャンセル
+
+    ///オーディオ再生する関数
+    AudioSource audioSource;
+
+    //TimeAlert
+    public Time_Manager time_Manager;
+
+    //時間切れになったかどうか
+    private bool timeOver;
+
 
 
     ///<Summary>
@@ -112,20 +128,43 @@ public class Game_Control : MonoBehaviour {
 
         //Initialize animation asset
         DOTween.Init(false, true, LogBehaviour.ErrorsOnly);
+
+        //AudioComponentを取得
+        audioSource = GetComponent<AudioSource>();
     }
 
     ///<Summary>
     /// 盤面上の動作やゲームオーバー判定などプレイ中の全ての挙動を行う
     ///</Summary>
     void Update () {
-
-        //Determine winner if there is one
-        if(gameOver)
+        //時間切れかゲームが終わったら
+        if (timeOver || gameOver)
         {
+            int[] scores = scoreBoard(spaceOwner, false);
+            //時間切れなら
+            if (timeOver)
+            {
+                alert.text = "Time Over!";
+            }
+            //ゲームが終わったらスコアごとに分岐
+            if (gameOver)
+            {
+                if (scores[0] > scores[1])
+                {
+                    alert.text = "You have won the game!";
+                }
+                else if (scores[0] == scores[1])
+                {
+                    alert.text = "It's a draw!";
+                }
+                else
+                {
+                    alert.text = "You have lost!";
+                }
+            }
             // Initialize process
             spaceOwner = new int[8, 8];
             gameOver = false;
-            int[] scores = scoreBoard(spaceOwner, false);
             scores[0] = 2;
             scores[1] = 2;
             placesLeft = 60;
@@ -141,6 +180,12 @@ public class Game_Control : MonoBehaviour {
             if (placesLeft == 0)
             {
                 gameOver = true;
+                return;
+            }
+            //時間切れになったとき
+            if(time_Manager.timerText.text == "0")
+            {
+                timeOver = true;
                 return;
             }
             //If current side has no possible moves..
@@ -615,38 +660,50 @@ public class Game_Control : MonoBehaviour {
     /// 各方向にひっくり返せる石があった場合反転させる
     ///</Summary>
     void findFlipDirections(int x, int y, int[,] board, bool realMove)
-    {                
+    {             
+        //タイマーリセット
+        time_Manager.Reset_Time();
+        //コマを置いた音再生
+        audioSource.PlayOneShot(sound1);   
         if(flipCounts[0] > 0)
         {
             flipPieces(x, y, -1, -1, board, realMove);
+            audioSource.PlayOneShot(sound2);//ひっくり返す音
         }
         if (flipCounts[1] > 0)
         {
             flipPieces(x, y, 0, -1, board, realMove);
+            audioSource.PlayOneShot(sound2);//ひっくり返す音
         }
         if (flipCounts[2] > 0)
         {
             flipPieces(x, y, 1, -1, board, realMove);
+            audioSource.PlayOneShot(sound2);//ひっくり返す音
         }
         if (flipCounts[3] > 0)
         {
             flipPieces(x, y, 1, 0, board, realMove);
+            audioSource.PlayOneShot(sound2);//ひっくり返す音
         }
         if (flipCounts[4] > 0)
         {
             flipPieces(x, y, 1, 1, board, realMove);
+            audioSource.PlayOneShot(sound2);//ひっくり返す音
         }
         if (flipCounts[5] > 0)
         {
             flipPieces(x, y, 0, 1, board, realMove);
+            audioSource.PlayOneShot(sound2);//ひっくり返す音
         }
         if (flipCounts[6] > 0)
         {
             flipPieces(x, y, -1, 1, board, realMove);
+            audioSource.PlayOneShot(sound2);//ひっくり返す音
         }
         if (flipCounts[7] > 0)
         {
             flipPieces(x, y, -1, 0, board, realMove);
+            audioSource.PlayOneShot(sound2);//ひっくり返す音
         }
     }
 
