@@ -20,6 +20,9 @@ public class Game_Control : MonoBehaviour {
     ///</Summary>
     static int[,] spaceOwner = new int[8, 8];
 
+    public static int[] result_score = new int[2];
+    public static int[] get_result_score() { return result_score; }
+
     //Used to keep track of number of valid flips in each direction (clockwise starting at top-left)
     ///<Summary>
     /// １方向に対して何枚石を反転させたかを記録する配列
@@ -88,6 +91,16 @@ public class Game_Control : MonoBehaviour {
     /// ゲーム開始時のボードの初期化を行う
     ///</Summary>
     void Start() {
+        // Initialize any parameter
+        spaceOwner = new int[8, 8];
+        playerTurn = true;
+        gameOver = false;
+        placesLeft = 60;
+        stall = 0;
+        int[] scores = scoreBoard(spaceOwner, false);
+        scores[0] = 2;
+        scores[1] = 2;
+
         //Initialize 4 starting pieces
         GameObject black1 = Instantiate(chip, new Vector3((float)(3.5), (float)(-3.5), (float)8.0), transform.rotation);
         GameObject black2 = Instantiate(chip, new Vector3((float)(4.5), (float)(-4.5), (float)8.0), transform.rotation);
@@ -122,15 +135,8 @@ public class Game_Control : MonoBehaviour {
         //Determine winner if there is one
         if(gameOver)
         {
-            // Initialize process
-            spaceOwner = new int[8, 8];
-            gameOver = false;
             int[] scores = scoreBoard(spaceOwner, false);
-            scores[0] = 2;
-            scores[1] = 2;
-            placesLeft = 60;
-            stall = 0;
-
+            result_score = scores;
             // move to result scene
             SceneManager.LoadScene("Result_Scene");
             return;
@@ -372,7 +378,7 @@ public class Game_Control : MonoBehaviour {
     ///<param name="board"> マスの情報 </param>
     ///<param name="hueristic"> ヒューリスティックを用いるかどうか 0,1</param>
     ///<returns> {プレイヤーの枚数, 相手の枚数} </returns>
-    private int[] scoreBoard(int[,] board, bool hueristic)
+    public int[] scoreBoard(int[,] board, bool hueristic)
     {
         int newPlayerScore = 0;
         int newAIScore = 0;
