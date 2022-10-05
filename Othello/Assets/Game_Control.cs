@@ -81,7 +81,7 @@ public class Game_Control : MonoBehaviour {
     ///押されてない時＝0
     ///押された時＝1
     ///使われた時＝-1
-    public int is_Button_Pless = 0;
+    private int is_Button_Pless = 0;
     ///SE
     ///コマを置いた時の音
     public AudioClip sound1; //コマを置くSE
@@ -93,8 +93,10 @@ public class Game_Control : MonoBehaviour {
     AudioSource audioSource;
 
     //TimeAlert
-    public Time_Manager time_Manager;
+    //public Time_Manager time_Manager;
 
+    //public Text timeAlert;
+    public TimeAlert timeAlert;
     //時間切れになったかどうか
     private bool timeOver;
 
@@ -125,6 +127,10 @@ public class Game_Control : MonoBehaviour {
         spaceOwner[4, 4] = 1;
         spaceOwner[3, 4] = 2;
         spaceOwner[4, 3] = 2;
+        //timemanagerのコンポーネント捜索
+        //もっといい書き方がある気がするFindをどのサイトも推奨していないbyうらやま
+        //time_Manager = GameObject.Find("Time_Manager").GetComponent<Time_Manager>();
+
 
         //Initialize animation asset
         DOTween.Init(false, true, LogBehaviour.ErrorsOnly);
@@ -149,6 +155,7 @@ public class Game_Control : MonoBehaviour {
             //ゲームが終わったらスコアごとに分岐
             if (gameOver)
             {
+                //spaceOwnerから両者のコマ数を引き出す
                 if (scores[0] > scores[1])
                 {
                     alert.text = "You have won the game!";
@@ -183,7 +190,7 @@ public class Game_Control : MonoBehaviour {
                 return;
             }
             //時間切れになったとき
-            if(time_Manager.timerText.text == "0")
+            if(timeAlert.text.text == "0")
             {
                 timeOver = true;
                 return;
@@ -662,7 +669,8 @@ public class Game_Control : MonoBehaviour {
     void findFlipDirections(int x, int y, int[,] board, bool realMove)
     {             
         //タイマーリセット
-        time_Manager.Reset_Time();
+        //time_Manager.Reset_Time();
+        timeAlert.Reset_Time();
         //コマを置いた音再生
         audioSource.PlayOneShot(sound1);   
         if(flipCounts[0] > 0)
