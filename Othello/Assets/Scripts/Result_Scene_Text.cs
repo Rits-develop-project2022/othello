@@ -9,7 +9,14 @@ public class Result_Scene_Text : MonoBehaviour
     public TextMeshProUGUI player, AI, Result_Message;
     // Start is called before the first frame update
     void Start()
-    {        
+    {
+        // Result message according to time over
+        if ( Game_Control.get_timeOver() )
+        {
+            Result_Message.text = "Time Over...";
+            return;
+        } 
+
         int[] scores = new int[2]; 
         scores = Game_Control.get_result_score(); // scores == array of [plauer score, AI score]
 

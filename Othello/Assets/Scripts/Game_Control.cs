@@ -101,8 +101,8 @@ public class Game_Control : MonoBehaviour {
     //public Text timeAlert;
     public TimeAlert timeAlert;
     //時間切れになったかどうか
-    private bool timeOver;
-
+    public static bool timeOver;
+    public static bool get_timeOver() { return timeOver; }
 
 
     ///<Summary>
@@ -113,6 +113,7 @@ public class Game_Control : MonoBehaviour {
         spaceOwner = new int[8, 8];
         playerTurn = true;
         gameOver = false;
+        timeOver = false;
         placesLeft = 60;
         stall = 0;
         int[] scores = scoreBoard(spaceOwner, false);
@@ -159,30 +160,10 @@ public class Game_Control : MonoBehaviour {
         //時間切れかゲームが終わったら
         if (timeOver || gameOver)
         {
+            // regist score
             int[] scores = scoreBoard(spaceOwner, false);
-            //時間切れなら
-            if (timeOver)
-            {
-                alert.text = "Time Over!";
-            }
-            //ゲームが終わったらスコアごとに分岐
-            if (gameOver)
-            {
-                //spaceOwnerから両者のコマ数を引き出す
-                if (scores[0] > scores[1])
-                {
-                    alert.text = "You have won the game!";
-                }
-                else if (scores[0] == scores[1])
-                {
-                    alert.text = "It's a draw!";
-                }
-                else
-                {
-                    alert.text = "You have lost!";
-                }
-            }
             result_score = scores;
+
             // move to result scene
             SceneManager.LoadScene("Result_Scene");
             return;
