@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Barracuda;
 
-public class OtheloAI: MonoBehaviour
+public class Othelo_Ai: MonoBehaviour
 {
 
     
     public NNModel modelSource;
+    //[SerializeField] private NNModel modelSource;
 
     //[SerializeField, Tooltip("入力する文字画像")]
     //private Texture2D m_InputTexture;
